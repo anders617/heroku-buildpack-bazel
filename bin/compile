@@ -42,7 +42,7 @@ ENV_DIR=$3
 BAZEL_BUILD_PATH=$(cat ${ENV_DIR}/BAZEL_BUILD_PATH)_deploy.jar
 
 
-# default to Bazel version 0.3.0
+# Check for environment Bazel version. Otherwise provide default.
 if [[ ! -v BAZEL_VERSION ]]; then
   BAZEL_VERSION="0.23.2"
 fi
