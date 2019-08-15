@@ -41,6 +41,10 @@ CACHE_DIR=$2
 ENV_DIR=$3
 BAZEL_BUILD_PATH=$(cat ${ENV_DIR}/BAZEL_BUILD_PATH)_deploy.jar
 
+echo "-----> BUILD_DIR: ${BUILD_DIR}"
+echo "-----> CACHE_DIR: ${CACHE_DIR}"
+echo "-----> ENV_DIR: ${ENV_DIR}"
+echo "-----> BAZEL_BUILD_PATH: ${BAZEL_BUILD_PATH}"
 
 # Check for environment Bazel version. Otherwise provide default.
 if [[ ! -v BAZEL_VERSION ]]; then
@@ -98,10 +102,24 @@ echo -e "\nbuild --spawn_strategy=standalone --genrule_strategy=standalone" \
 
 # Build app
 echo "-----> Building binary at $BAZEL_BUILD_PATH"
+
 BAZEL="${BASE_PATH}/bin/bazel --bazelrc=${BUILD_DIR}/bazel.bazelrc"
+
+BUILD_CACHE_LOCATION=$(cat ${ENV_DIR}/BUILD_CACHE_LOCATION)
+BUILD_CACHE_GCP_CREDENTIALS=$(cat ${ENV_DIR}/BUILD_CACHE_GCP_CREDENTIALS)
+
+BAZEL_BUILD_FLAGS=""
+if [[ -n $BUILD_CACHE_LOCATION ]]; then
+  BAZEL_BUILD_FLAGS="$BAZEL_BUILD_FLAGS --remote_http_cache=${BUILD_CACHE_LOCATION} --remote_upload_local_results=false"
+fi
+
+if [[ -n $BUILD_CACHE_GCP_CREDENTIALS ]]; then
+  BAZEL_BUILD_FLAGS="$BAZEL_BUILD_FLAGS --google_credentials=${BUILD_CACHE_GCP_CREDENTIALS}"
+fi
+
 cd $BUILD_DIR
 ${BAZEL} clean
-${BAZEL} build "${BAZEL_BUILD_PATH}"
+${BAZEL} build "${BAZEL_BUILD_PATH}" "${BAZEL_BUILD_FLAGS}"
 echo "-----> Building binary: complete"
 
 # Find absolute path to deploy jar. For whatever reason. Heroku doesn't like the
