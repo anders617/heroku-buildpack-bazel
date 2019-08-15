@@ -110,7 +110,7 @@ BUILD_CACHE_GCP_CREDENTIALS=$(cat ${ENV_DIR}/BUILD_CACHE_GCP_CREDENTIALS)
 
 BAZEL_BUILD_FLAGS=""
 if [[ -n $BUILD_CACHE_LOCATION ]]; then
-  BAZEL_BUILD_FLAGS="${BAZEL_BUILD_FLAGS} --remote_http_cache='${BUILD_CACHE_LOCATION}' --remote_upload_local_results=false"
+  BAZEL_BUILD_FLAGS="${BAZEL_BUILD_FLAGS} --remote_http_cache=${BUILD_CACHE_LOCATION} --remote_upload_local_results=false"
 fi
 
 if [[ -n $BUILD_CACHE_GCP_CREDENTIALS ]]; then
@@ -119,7 +119,7 @@ fi
 
 cd $BUILD_DIR
 ${BAZEL} clean
-${BAZEL} build ${BAZEL_BUILD_FLAGS} ${BAZEL_BUILD_PATH}
+${BAZEL} build ${BAZEL_BUILD_PATH}
 echo "-----> Building binary: complete"
 
 # Find absolute path to deploy jar. For whatever reason. Heroku doesn't like the
