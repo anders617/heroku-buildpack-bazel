@@ -94,21 +94,13 @@ bash "${BAZEL_INSTALLER}" \
   --bin="${BASE_PATH}/binary" | indent
 echo "-----> Installing Bazel: complete"
 
-# Custom bazelrc file for Docker
-echo "-----> Configuring Bazel"
-echo -e "\nstartup --batch" >> $BUILD_DIR/bazel.bazelrc
-echo -e "\nbuild --spawn_strategy=standalone --genrule_strategy=standalone" \
-  >> $BUILD_DIR/bazel.bazelrc
+BAZEL_BUILD_FLAGS="--spawn_strategy=standalone --genrule_strategy=standalone"
 
-# Build app
-echo "-----> Building binary at $BAZEL_BUILD_PATH"
-
-BAZEL="${BASE_PATH}/bin/bazel --bazelrc=${BUILD_DIR}/bazel.bazelrc"
-
+# Configure Bazel build cache
 BUILD_CACHE_LOCATION=$(cat ${ENV_DIR}/BUILD_CACHE_LOCATION)
 BUILD_CACHE_GCP_CREDENTIALS=$(cat ${ENV_DIR}/BUILD_CACHE_GCP_CREDENTIALS)
 
-BAZEL_BUILD_FLAGS=""
+
 if [[ -n $BUILD_CACHE_LOCATION ]]; then
   BAZEL_BUILD_FLAGS="${BAZEL_BUILD_FLAGS} --remote_http_cache=${BUILD_CACHE_LOCATION} --remote_upload_local_results=false"
 fi
@@ -116,6 +108,18 @@ fi
 if [[ -n $BUILD_CACHE_GCP_CREDENTIALS ]]; then
   BAZEL_BUILD_FLAGS="${BAZEL_BUILD_FLAGS} --google_credentials=${BUILD_CACHE_GCP_CREDENTIALS}"
 fi
+
+
+# Custom bazelrc file for Docker
+echo "-----> Configuring Bazel"
+echo -e "\nstartup --batch" >> $BUILD_DIR/bazel.bazelrc
+echo -e "\nbuild ${BAZEL_BUILD_FLAGS}" >> $BUILD_DIR/bazel.bazelrc
+
+# Build app
+echo "-----> Building binary at $BAZEL_BUILD_PATH"
+
+BAZEL="${BASE_PATH}/bin/bazel --bazelrc=${BUILD_DIR}/bazel.bazelrc"
+
 
 cd $BUILD_DIR
 ${BAZEL} clean
