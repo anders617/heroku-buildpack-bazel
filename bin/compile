@@ -48,7 +48,7 @@ echo "-----> ENV_DIR: ${ENV_DIR}"
 echo "-----> BAZEL_BUILD_PATH: ${BAZEL_BUILD_PATH}"
 echo "-----> USE_BUILD_CACHE: ${USE_BUILD_CACHE}"
 
-if [$USE_BUILD_CACHE = '1']; then
+if [[ -n $USE_BUILD_CACHE ]]; then
   BUILD_CACHE_BUCKET=$(cat ${ENV_DIR}/BUILD_CACHE_BUCKET)
   GOOGLE_STORAGE_CREDENTIAL_FILE_PATH=$BUILD_DIR/$(cat ${ENV_DIR}/GOOGLE_STORAGE_CREDENTIAL_FILE_PATH)
 fi
@@ -112,8 +112,8 @@ echo "-----> Building binary at $BAZEL_BUILD_PATH"
 
 BAZEL="${BASE_PATH}/bin/bazel --bazelrc=${BUILD_DIR}/bazel.bazelrc"
 
-if [$USE_BUILD_CACHE = '1']; then
-  BAZEL_BUILD_FLAGS="--remote_http_cache=${BUILD_CACHE_BUCKET} --google_credentials=${GOOGLE_STORAGE_CREDENTIAL_FILE_PATH}"
+if [[ -n $USE_BUILD_CACHE ]]; then
+  BAZEL_BUILD_FLAGS="--remote_http_cache=${BUILD_CACHE_BUCKET} --google_credentials=${GOOGLE_STORAGE_CREDENTIAL_FILE_PATH} --remote_upload_local_results=false"
 else
   BAZEL_BUILD_FLAGS=""
 fi
