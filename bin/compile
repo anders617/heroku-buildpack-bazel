@@ -105,12 +105,6 @@ echo "-----> Building binary at $BAZEL_BUILD_PATH"
 
 BAZEL="${BASE_PATH}/bin/bazel --bazelrc=${BUILD_DIR}/bazel.bazelrc"
 
-if [[ -n $USE_BUILD_CACHE ]]; then
-  BAZEL_BUILD_FLAGS="--remote_http_cache=${BUILD_CACHE_BUCKET} --google_credentials=${GOOGLE_STORAGE_CREDENTIAL_FILE_PATH} --remote_upload_local_results=false"
-else
-  BAZEL_BUILD_FLAGS=""
-fi
-
 BUILD_CACHE_LOCATION=$(cat ${ENV_DIR}/BUILD_CACHE_LOCATION)
 BUILD_CACHE_GCP_CREDENTIALS=$(cat ${ENV_DIR}/BUILD_CACHE_GCP_CREDENTIALS)
 
