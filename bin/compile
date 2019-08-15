@@ -102,7 +102,7 @@ BUILD_CACHE_GCP_CREDENTIALS=$(cat ${ENV_DIR}/BUILD_CACHE_GCP_CREDENTIALS)
 
 
 if [[ -n $BUILD_CACHE_LOCATION ]]; then
-  BAZEL_BUILD_FLAGS="${BAZEL_BUILD_FLAGS} --remote_http_cache=${BUILD_CACHE_LOCATION} --remote_upload_local_results=false"
+  BAZEL_BUILD_FLAGS="${BAZEL_BUILD_FLAGS} --remote_http_cache=${BUILD_CACHE_LOCATION}"
 fi
 
 if [[ -n $BUILD_CACHE_GCP_CREDENTIALS ]]; then
