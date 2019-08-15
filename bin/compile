@@ -40,18 +40,11 @@ BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
 BAZEL_BUILD_PATH=$(cat ${ENV_DIR}/BAZEL_BUILD_PATH)_deploy.jar
-USE_BUILD_CACHE=$(cat ${ENV_DIR}/USE_BUILD_CACHE)
 
 echo "-----> BUILD_DIR: ${BUILD_DIR}"
 echo "-----> CACHE_DIR: ${CACHE_DIR}"
 echo "-----> ENV_DIR: ${ENV_DIR}"
 echo "-----> BAZEL_BUILD_PATH: ${BAZEL_BUILD_PATH}"
-echo "-----> USE_BUILD_CACHE: ${USE_BUILD_CACHE}"
-
-if [[ -n $USE_BUILD_CACHE ]]; then
-  BUILD_CACHE_BUCKET=$(cat ${ENV_DIR}/BUILD_CACHE_BUCKET)
-  GOOGLE_STORAGE_CREDENTIAL_FILE_PATH=$BUILD_DIR/$(cat ${ENV_DIR}/GOOGLE_STORAGE_CREDENTIAL_FILE_PATH)
-fi
 
 # Check for environment Bazel version. Otherwise provide default.
 if [[ ! -v BAZEL_VERSION ]]; then
@@ -116,6 +109,18 @@ if [[ -n $USE_BUILD_CACHE ]]; then
   BAZEL_BUILD_FLAGS="--remote_http_cache=${BUILD_CACHE_BUCKET} --google_credentials=${GOOGLE_STORAGE_CREDENTIAL_FILE_PATH} --remote_upload_local_results=false"
 else
   BAZEL_BUILD_FLAGS=""
+fi
+
+BUILD_CACHE_LOCATION=$(cat ${ENV_DIR}/BUILD_CACHE_LOCATION)
+BUILD_CACHE_GCP_CREDENTIALS=$(cat ${ENV_DIR}/BUILD_CACHE_GCP_CREDENTIALS)
+
+BAZEL_BUILD_FLAGS=""
+if [[ -n $BUILD_CACHE_LOCATION ]]; then
+  BAZEL_BUILD_FLAGS="$BAZEL_BUILD_FLAGS --remote_http_cache=${BUILD_CACHE_LOCATION} --remote_upload_local_results=false"
+fi
+
+if [[ -n $BUILD_CACHE_GCP_CREDENTIALS ]]; then
+  BAZEL_BUILD_FLAGS="$BAZEL_BUILD_FLAGS --google_credentials=${BUILD_CACHE_GCP_CREDENTIALS}"
 fi
 
 cd $BUILD_DIR
