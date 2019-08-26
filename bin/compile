@@ -97,8 +97,8 @@ echo "-----> Installing Bazel: complete"
 BAZEL_BUILD_FLAGS="--spawn_strategy=standalone --genrule_strategy=standalone"
 
 # Configure Bazel build cache
-BUILD_CACHE_LOCATION=$(cat ${ENV_DIR}/BUILD_CACHE_LOCATION)
-BUILD_CACHE_GCP_CREDENTIALS=$(cat ${ENV_DIR}/BUILD_CACHE_GCP_CREDENTIALS)
+BUILD_CACHE_LOCATION=$(cat ${ENV_DIR}/BUILD_CACHE_LOCATION || true)
+BUILD_CACHE_GCP_CREDENTIALS=$(cat ${ENV_DIR}/BUILD_CACHE_GCP_CREDENTIALS || true)
 
 
 if [[ -n $BUILD_CACHE_LOCATION ]]; then
