@@ -51,21 +51,6 @@ if [[ ! -v BAZEL_VERSION ]]; then
   BAZEL_VERSION="0.23.2"
 fi
 
-# install Java 1.8
-JVM_BUILDPACK="https://codon-buildpacks.s3.amazonaws.com/buildpacks/heroku/jvm-common.tgz"
-JVM_COMMON_BUILDPACK=${JVM_COMMON_BUILDPACK:-${JVM_BUILDPACK}}
-echo "-----> Installing Java 8 from ${JVM_COMMON_BUILDPACK}"
-mkdir -p /tmp/jvm-common
-curl --retry 3 --silent --location $JVM_COMMON_BUILDPACK \
-  | tar xzm -C /tmp/jvm-common --strip-components=1
-. /tmp/jvm-common/bin/util
-. /tmp/jvm-common/bin/java
-
-# Set this environment variable for Bazel, so it can use JDK 1.8.
-export JAVA_HOME="${BUILD_DIR}/.jdk"
-install_java_with_overlay ${BUILD_DIR} | indent
-echo "-----> Installing Java 8: complete"
-
 # Create the CACHE_DIR if it doesn't exist.
 if [[ ! -d ${CACHE_DIR} ]]; then
   mkdir ${CACHE_DIR}
@@ -133,7 +118,7 @@ BAZEL_BIN=$(ls -l | grep "bazel-bin" | sed "s/.* -> //")
 # Copy the deploy jar to the build directory
 JAR_PATH=$(echo "$BAZEL_BUILD_PATH" | sed "s/:/\//" | sed "s/\/\///")
 echo "-----> Copying jar at $JAR_PATH"
-cp ${BAZEL_BIN}/${JAR_PATH} $BUILD_DIR/app.jar
+cp -r ${BAZEL_BIN}/* $BUILD_DIR/
 echo "-----> Copying jar: complete"
 
 # Clean up other artifacts so that the slug is smaller
