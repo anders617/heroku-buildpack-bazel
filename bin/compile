@@ -119,6 +119,9 @@ BAZEL_BIN=$(ls -l | grep "bazel-bin" | sed "s/.* -> //")
 # Copy the deploy jar to the build directory
 echo "-----> Copying ${BAZEL_BIN} files to ${BUILD_DIR}"
 cp -rv ${BAZEL_BIN}/* $BUILD_DIR/
+mv -rv $BUILD_DIR/cmd/web/linux_amd64_stripped/* $BUILD_DIR/cmd/web
+mv -rv $BUILD_DIR/cmd/fetch/linux_amd64_stripped/* $BUILD_DIR/cmd/fetch
+mv -rv $BUILD_DIR/cmd/db/linux_amd64_stripped/* $BUILD_DIR/cmd/db
 echo "-----> Copying jar: complete"
 
 # Clean up other artifacts so that the slug is smaller
